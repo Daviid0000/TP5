@@ -4,7 +4,7 @@ class ProductServices {
     constructor() { }
 
     async findAll() {
-        return await Product.find();
+        return await Product.findAll();
     }
 
     async create(product) {
