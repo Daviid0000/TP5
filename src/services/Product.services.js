@@ -10,6 +10,18 @@ class ProductServices {
     async create(product) {
         return await Product.create(product);
     }
+
+    async findByPk(id) {
+        return await Product.findByPk(id)
+    }
+
+    async update(id, product){
+        return await Product.update(id, product)
+    }
+
+    async destroy(id) {
+        return await Product.destroy(id)
+    }
 }
 
 export default new ProductServices();
