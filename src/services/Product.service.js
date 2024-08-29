@@ -16,11 +16,11 @@ class ProductServices {
     }
 
     async update(id, product){
-        return await Product.update(id, product)
+        return await Product.update(product, { where: { id }})
     }
 
     async destroy(id) {
-        return await Product.destroy(id)
+        return await Product.destroy({ where: { id }})
     }
 }
 

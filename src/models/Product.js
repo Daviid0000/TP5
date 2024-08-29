@@ -5,12 +5,22 @@ export const Product = sequelize.define("Product", {
     
     name: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: false
     },
+    description: {
+        type: DataTypes.STRING,
+        allowNull: false    
+    },
+
     price: {
         type: DataTypes.INTEGER,
-        allowNull: true
-    }
+        allowNull: false
+    },
+    stock: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+
 })
 
-// Product.sync()
+Product.sync()

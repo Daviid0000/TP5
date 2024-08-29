@@ -1,13 +1,14 @@
 import { body } from "express-validator";
 
-export const ProductSchema = () => {
+export const ProductSchema = [
     body("name")
-        .notEmpty().trim()
-        .isString()
-        .isLength({min: 5})
+        .isString().withMessage("Error: Nombre debe ser un texto")
+        .notEmpty().trim().withMessage("Error: Nombre vacío")
+        .isLength({min: 5}).withMessage("Error: Longitud mínima 5"),
 
     body("price")
-        .notEmpty().trim()
-        .isNumeric()
-        .isLength({min: 4})
-    }
+        .isNumeric().withMessage("Error: Precio debe ser numérico")
+        .notEmpty().trim().withMessage("Error: Precio vacío")
+        .isLength({min: 4}).withMessage("Error: Longitud minima 4")
+
+    ]

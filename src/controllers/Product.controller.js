@@ -1,4 +1,4 @@
-import ProductServices from "../services/Product.services.js";
+import ProductServices from "../services/Product.service.js";
 
 export const getProducts = async (req, res) => {
     
@@ -12,21 +12,21 @@ export const getProducts = async (req, res) => {
                 message: "No se han encontrado productos"
             })
         }
+
         return res.json(products)
     } catch (error) {
         res.status(500).json({
-            message: "No se han obtenido los productos", 
+            message: "Error en el servidor", 
             error: error.message
         })
     }
 }
 
 export const createProduct = async (req, res) => {
-    const { name, price } = req.body;
+    const { name, price, description, stock } = req.body;
+
     try {
-        console.log("Creando producto...")
-        const ProductCreated = await ProductServices.create({name, price})
-        console.log("Producto:", ProductCreated)
+        const ProductCreated = await ProductServices.create({name, price, description, stock })
 
         if(!ProductCreated){
             return res.json({message: "Error al crear el producto"})
@@ -63,14 +63,7 @@ export const updateProduct = async (req, res) => {
     
     try {
 
-        const updatedProduct = await ProductServices.update({ 
-            name, 
-            price 
-        }, {
-            where : {
-                id
-            }
-        })
+        const updatedProduct = await ProductServices.update(id, {name, price})
         console.log("actualizacion:",updatedProduct)
         if(!updatedProduct) {
             throw({
@@ -93,8 +86,9 @@ export const deleteProduct = async (req, res) => {
     const { id } = req.params;
 
     try {
+        
         const deletedProduct = await ProductServices.destroy(id);
-
+        console.log("delete:", deletedProduct)
         if(!deletedProduct) {
             throw({
                 statusCode: 400,

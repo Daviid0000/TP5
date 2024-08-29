@@ -5,6 +5,7 @@ import "dotenv/config";
 import { PORT } from "../config/enviroments.js";
 import routerProduct from "../router/Product.routes.js";
 import dbConnection from "../config/dbConnection.js";
+import userRoutes from "../router/User.routes.js";
 
 class Server {
     constructor() {
@@ -30,6 +31,7 @@ class Server {
 
     routes() {
         this.app.use("/api", routerProduct);
+        this.app.use("/api/user", userRoutes);
     }
 
     listen() {
