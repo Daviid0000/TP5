@@ -2,7 +2,10 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../config/dbConnection.js";
 
 export const Product = sequelize.define("Product", {
-    
+    seller: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     name: {
         type: DataTypes.STRING,
         allowNull: false
@@ -20,6 +23,11 @@ export const Product = sequelize.define("Product", {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    buys: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 0
+    }
 
 })
 

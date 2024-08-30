@@ -22,6 +22,7 @@ class ProductServices {
     async destroy(id) {
         return await Product.destroy({ where: { id }})
     }
+
 }
 
 export default new ProductServices();

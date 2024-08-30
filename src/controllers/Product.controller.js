@@ -1,4 +1,6 @@
 import ProductServices from "../services/Product.service.js";
+import UserService from "../services/User.service.js";
+import { Payment } from "../models/Payment.js";
 
 export const getProducts = async (req, res) => {
     
@@ -23,10 +25,30 @@ export const getProducts = async (req, res) => {
 }
 
 export const createProduct = async (req, res) => {
-    const { name, price, description, stock } = req.body;
+    const { seller, name, price, description, stock } = req.body;
 
     try {
-        const ProductCreated = await ProductServices.create({name, price, description, stock })
+        const userExist = await UserService.findOne(seller);
+
+        console.log("usuario:", userExist)
+
+
+        if(!userExist){
+            throw({
+                statusCode: 404,
+                status: "Not Found",
+                message: "Usuario no autenticado para vender productos"
+            })
+        }
+
+        if(userExist.rol !== "VENDEDOR"){
+            throw({
+                statusCode: 400,
+                message: "No cumple con el rol para crear productos"
+            })
+        }
+
+        const ProductCreated = await ProductServices.create({ seller, name, price, description, stock })
 
         if(!ProductCreated){
             return res.json({message: "Error al crear el producto"})
@@ -100,5 +122,59 @@ export const deleteProduct = async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ message: "Error en el servidor", error: error.message })
+    }
+}
+
+export const buyProduct = async (req, res) => {
+    const { id } = req.params;
+    const { buys, email, payment } = req.body;
+
+    try {
+        const userExist = await UserService.findOne(email);
+
+        if(!userExist){
+            throw({
+                statusCode: 404,
+                status: "Not Found",
+                message: "Inicia sesión para comprar"
+            })
+        };
+
+        if(userExist.rol !== "CLIENTE"){
+            throw({
+                statusCode: 400,
+                message: "No cumple con el rol para comprar un producto"
+            })
+        };
+
+        const STOCK = await ProductServices.findByPk(id);
+
+        if(!STOCK || (STOCK.stock <= 0)){
+            throw({
+                statusCode: 404,
+                status: "Not Found",
+                message: "Ya no existe este producto"
+            })
+        }
+
+        const buyingProduct = STOCK.update({
+            stock: STOCK.stock - buys, 
+            buys: STOCK.buys + buys
+        });
+
+        if(!buyingProduct) {
+            throw({
+                statusCode: 404,
+                message: "No se compró el producto"
+            })
+        };
+
+        return res.json({ message: "Producto comprado", buyingProduct});
+        
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error en el servidor",
+            error: error.message
+        })
     }
 }

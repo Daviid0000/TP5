@@ -31,7 +31,7 @@ class Server {
 
     routes() {
         this.app.use("/api", routerProduct);
-        this.app.use("/api/user", userRoutes);
+        this.app.use("/user", userRoutes);
     }
 
     listen() {

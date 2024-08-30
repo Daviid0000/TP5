@@ -16,11 +16,15 @@ class userService {
     }
 
     async update(id, user){
-        return await User.update(user, { where: id })
+        return await User.update(user, { where: { id } })
     }
 
     async destroy(id){
         return await User.destroy({ where: { id }  })
+    }
+
+    async findOne(email){
+        return await User.findOne({ where: { email:email }})
     }
 
 }
