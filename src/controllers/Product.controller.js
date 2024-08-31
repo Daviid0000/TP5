@@ -1,7 +1,6 @@
 import ProductServices from "../services/Product.service.js";
 import UserService from "../services/User.service.js";
 import { Payment } from "../models/Payment.js";
-
 export const getProducts = async (req, res) => {
     
     try {
@@ -127,7 +126,7 @@ export const deleteProduct = async (req, res) => {
 
 export const buyProduct = async (req, res) => {
     const { id } = req.params;
-    const { buys, email, payment } = req.body;
+    const { buys, email, money, payment } = req.body;
 
     try {
         const userExist = await UserService.findOne(email);
@@ -147,29 +146,47 @@ export const buyProduct = async (req, res) => {
             })
         };
 
-        const STOCK = await ProductServices.findByPk(id);
+        const producto = await ProductServices.findByPk(id);
 
-        if(!STOCK || (STOCK.stock <= 0)){
+        if(!producto || (producto.stock <= 0)){
             throw({
                 statusCode: 404,
                 status: "Not Found",
                 message: "Ya no existe este producto"
-            })
-        }
+            });
+        };
 
-        const buyingProduct = STOCK.update({
-            stock: STOCK.stock - buys, 
-            buys: STOCK.buys + buys
-        });
+        if(payment !== "CARD"){
+            if(payment !== "TRANSFER"){
+                if(payment !== "CASH"){
+                    throw({
+                        statusCode: 400,
+                        message: "Elija un medio de pago como 'CARD', 'TRANSFER' o 'CASH'"
+                    });
+                };
+            };
+        };
 
-        if(!buyingProduct) {
+        console.log("A elegido el medio de pago:", payment);
+
+        const total = buys*producto.price;
+
+        console.log("Pago total:", total)
+        console.log("Dinero de cliente: ", money)
+
+        if(!(money === total)){
             throw({
-                statusCode: 404,
-                message: "No se compró el producto"
+                statusCode: 400,
+                message: "Dinero insuficiente"
             })
         };
 
-        return res.json({ message: "Producto comprado", buyingProduct});
+        producto.update({
+            stock: producto.stock - buys, 
+            buys: producto.buys + buys
+        });
+
+        return res.json({ message: "Producto comprado"});
         
     } catch (error) {
         return res.status(500).json({
